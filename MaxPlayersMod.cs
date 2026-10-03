@@ -170,9 +170,17 @@ namespace SOSOpsMaxPlayers
     {
         public static bool Prefix(DynamicMenuExperience __instance, int index)
         {
-            if (__instance.spawnedLobbyPlayers == null || index < 0 || index >= __instance.spawnedLobbyPlayers.Length)
+            if (index < 0 || index >= 4)
             {
-                // Extra players (5+) do not have 3D background podiums in the main menu; skip animation to avoid index crash
+                return false;
+            }
+            try
+            {
+                if (__instance.spawnedLobbyPlayers == null || index >= __instance.spawnedLobbyPlayers.Count)
+                    return false;
+            }
+            catch
+            {
                 return false;
             }
             return true;
@@ -184,9 +192,17 @@ namespace SOSOpsMaxPlayers
     {
         public static bool Prefix(DynamicMenuExperience __instance, int index)
         {
-            if (__instance.spawnedLobbyPlayers == null || index < 0 || index >= __instance.spawnedLobbyPlayers.Length)
+            if (index < 0 || index >= 4)
             {
-                // Extra players (5+) do not have 3D background podiums in the main menu; skip animation to avoid index crash
+                return false;
+            }
+            try
+            {
+                if (__instance.spawnedLobbyPlayers == null || index >= __instance.spawnedLobbyPlayers.Count)
+                    return false;
+            }
+            catch
+            {
                 return false;
             }
             return true;
