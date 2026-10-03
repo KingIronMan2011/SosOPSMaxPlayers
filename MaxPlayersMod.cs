@@ -14,7 +14,7 @@ using Il2CppSOSOPS.Utility;
 using Il2CppSteamworks;
 using UnityEngine;
 
-[assembly: MelonInfo(typeof(SOSOpsMaxPlayers.MaxPlayersMod), "SOS Ops Max Players Mod", "1.3.2", "KingIronMan2011")]
+[assembly: MelonInfo(typeof(SOSOpsMaxPlayers.MaxPlayersMod), "SOS Ops Max Players Mod", "1.3.3", "KingIronMan2011")]
 [assembly: MelonGame("ArtDock", "SOS OPS")]
 
 namespace SOSOpsMaxPlayers
@@ -165,26 +165,28 @@ namespace SOSOpsMaxPlayers
     // DYNAMIC MENU 3D CHARACTER SAFETY
     // ==========================================
 
-    [HarmonyPatch(typeof(DynamicMenuExperience), nameof(DynamicMenuExperience.LobbyPlayerJoined))]
+    [HarmonyPatch(typeof(DynamicMenuExperience), nameof(DynamicMenuExperience.LobbyPlayerJoined), new System.Type[] { typeof(int), typeof(ulong) })]
     public static class Patch_DynamicMenuExperience_LobbyPlayerJoined
     {
-        public static bool Prefix(int index)
+        public static bool Prefix(int index, ulong clientId)
         {
             if (index < 0 || index >= 4)
             {
+                // Extra players (5+) do not have 3D background podiums in the main menu; skip animation to avoid index crash
                 return false;
             }
             return true;
         }
     }
 
-    [HarmonyPatch(typeof(DynamicMenuExperience), nameof(DynamicMenuExperience.LobbyPlayerLeaved))]
+    [HarmonyPatch(typeof(DynamicMenuExperience), nameof(DynamicMenuExperience.LobbyPlayerLeaved), new System.Type[] { typeof(int) })]
     public static class Patch_DynamicMenuExperience_LobbyPlayerLeaved
     {
         public static bool Prefix(int index)
         {
             if (index < 0 || index >= 4)
             {
+                // Extra players (5+) do not have 3D background podiums in the main menu; skip animation to avoid index crash
                 return false;
             }
             return true;
