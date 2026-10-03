@@ -20,8 +20,8 @@ A [MelonLoader](https://melonwiki.xyz/) mod for **SOS OPS!** that increases the 
 
 ## Installation
 
-1. Install **MelonLoader** (v0.6.x or v0.7.x for .NET 6 / IL2CPP) into your *SOS OPS* game folder:
-   - Run the MelonLoader Installer and select `SOS OPS.exe`.
+1. Download and run the **[MelonLoader Installer](https://github.com/LavaGang/MelonLoader.Installer/releases/latest/download/MelonLoader.Installer.exe)**:
+   - In the installer, select `SOS OPS.exe` (v0.6.x or v0.7.x for .NET 6 / IL2CPP).
    - Launch the game once so MelonLoader generates the necessary IL2CPP interop assemblies, then close the game.
 2. Download or compile `SOSOpsMaxPlayersMod.dll`.
 3. Drop `SOSOpsMaxPlayersMod.dll` into the `Mods/` folder inside your *SOS OPS* game directory:
