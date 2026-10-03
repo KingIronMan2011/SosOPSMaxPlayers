@@ -14,7 +14,7 @@ using Il2CppSOSOPS.Utility;
 using Il2CppSteamworks;
 using UnityEngine;
 
-[assembly: MelonInfo(typeof(SOSOpsMaxPlayers.MaxPlayersMod), "SOS Ops Max Players Mod", "1.3.0", "KingIronMan2011")]
+[assembly: MelonInfo(typeof(SOSOpsMaxPlayers.MaxPlayersMod), "SOS Ops Max Players Mod", "1.3.2", "KingIronMan2011")]
 [assembly: MelonGame("ArtDock", "SOS OPS")]
 
 namespace SOSOpsMaxPlayers
@@ -168,18 +168,9 @@ namespace SOSOpsMaxPlayers
     [HarmonyPatch(typeof(DynamicMenuExperience), nameof(DynamicMenuExperience.LobbyPlayerJoined))]
     public static class Patch_DynamicMenuExperience_LobbyPlayerJoined
     {
-        public static bool Prefix(DynamicMenuExperience __instance, int index)
+        public static bool Prefix(int index)
         {
             if (index < 0 || index >= 4)
-            {
-                return false;
-            }
-            try
-            {
-                if (__instance.spawnedLobbyPlayers == null || index >= __instance.spawnedLobbyPlayers.Count)
-                    return false;
-            }
-            catch
             {
                 return false;
             }
@@ -190,18 +181,9 @@ namespace SOSOpsMaxPlayers
     [HarmonyPatch(typeof(DynamicMenuExperience), nameof(DynamicMenuExperience.LobbyPlayerLeaved))]
     public static class Patch_DynamicMenuExperience_LobbyPlayerLeaved
     {
-        public static bool Prefix(DynamicMenuExperience __instance, int index)
+        public static bool Prefix(int index)
         {
             if (index < 0 || index >= 4)
-            {
-                return false;
-            }
-            try
-            {
-                if (__instance.spawnedLobbyPlayers == null || index >= __instance.spawnedLobbyPlayers.Count)
-                    return false;
-            }
-            catch
             {
                 return false;
             }
