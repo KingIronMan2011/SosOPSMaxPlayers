@@ -2,7 +2,7 @@
 
 A [MelonLoader](https://melonwiki.xyz/) mod for **SOS OPS!** that increases the multiplayer lobby player limit (default: **8**, fully configurable) and automatically expands the game's UI and netcode to support extra players.
 
-> [!NOTE]
+> [!WARNING]
 > **Disclaimer:** This mod was developed with the assistance of AI (Google Gemini).
 
 ---
