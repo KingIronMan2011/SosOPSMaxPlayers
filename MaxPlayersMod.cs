@@ -5,6 +5,7 @@ using Il2CppSOSOPS.Constants;
 using Il2CppSOSOPS.Game.Network;
 using Il2CppSOSOPS.Game.Network.States;
 using Il2CppSOSOPS.Game.Network.NetworkSession.Modules;
+using Il2CppSOSOPS.Game.Environment.DynamicMenu;
 using Il2CppSOSOPS.UI.MainMenu.Tabs;
 using Il2CppSOSOPS.UI.PlayerList;
 using Il2CppSOSOPS.UI.Lobby;
@@ -13,7 +14,7 @@ using Il2CppSOSOPS.Utility;
 using Il2CppSteamworks;
 using UnityEngine;
 
-[assembly: MelonInfo(typeof(SOSOpsMaxPlayers.MaxPlayersMod), "SOS Ops Max Players Mod", "1.2.0", "KingIronMan2011")]
+[assembly: MelonInfo(typeof(SOSOpsMaxPlayers.MaxPlayersMod), "SOS Ops Max Players Mod", "1.3.0", "KingIronMan2011")]
 [assembly: MelonGame("ArtDock", "SOS OPS")]
 
 namespace SOSOpsMaxPlayers
@@ -157,6 +158,38 @@ namespace SOSOpsMaxPlayers
             if (index < 0) index = 0;
             // Wrap index around 4 (standard color palette size) to prevent IndexOutOfRangeException
             index = (sbyte)(index % 4);
+        }
+    }
+
+    // ==========================================
+    // DYNAMIC MENU 3D CHARACTER SAFETY
+    // ==========================================
+
+    [HarmonyPatch(typeof(DynamicMenuExperience), nameof(DynamicMenuExperience.LobbyPlayerJoined))]
+    public static class Patch_DynamicMenuExperience_LobbyPlayerJoined
+    {
+        public static bool Prefix(DynamicMenuExperience __instance, int index)
+        {
+            if (__instance.spawnedLobbyPlayers == null || index < 0 || index >= __instance.spawnedLobbyPlayers.Length)
+            {
+                // Extra players (5+) do not have 3D background podiums in the main menu; skip animation to avoid index crash
+                return false;
+            }
+            return true;
+        }
+    }
+
+    [HarmonyPatch(typeof(DynamicMenuExperience), nameof(DynamicMenuExperience.LobbyPlayerLeaved))]
+    public static class Patch_DynamicMenuExperience_LobbyPlayerLeaved
+    {
+        public static bool Prefix(DynamicMenuExperience __instance, int index)
+        {
+            if (__instance.spawnedLobbyPlayers == null || index < 0 || index >= __instance.spawnedLobbyPlayers.Length)
+            {
+                // Extra players (5+) do not have 3D background podiums in the main menu; skip animation to avoid index crash
+                return false;
+            }
+            return true;
         }
     }
 

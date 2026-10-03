@@ -5,8 +5,27 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>disable</Nullable>
     <LangVersion>latest</LangVersion>
-    <GameDir Condition="'$(GameDir)' == ''">C:\Program Files (x86)\Steam\steamapps\common\SOS OPS</GameDir>
+
+    <!-- 1. Check user-defined property or environment variable -->
+    <GameDir Condition="'$(GameDir)' == '' and '$(SOSOPS_PATH)' != ''">$(SOSOPS_PATH)</GameDir>
+
+    <!-- 2. Auto-detect from Steam Registry (HKCU) -->
+    <_SteamPathFromRegistry Condition="'$(GameDir)' == '' and '$(OS)' == 'Windows_NT'">$([MSBuild]::GetRegistryValueFromView('HKEY_CURRENT_USER\Software\Valve\Steam', 'SteamPath', null, RegistryView.Default))</_SteamPathFromRegistry>
+    <GameDir Condition="'$(GameDir)' == '' and '$(_SteamPathFromRegistry)' != '' and Exists('$(_SteamPathFromRegistry)\steamapps\common\SOS OPS')">$(_SteamPathFromRegistry)\steamapps\common\SOS OPS</GameDir>
+
+    <!-- 3. Fallback to common Steam library locations -->
+    <GameDir Condition="'$(GameDir)' == '' and Exists('C:\Program Files (x86)\Steam\steamapps\common\SOS OPS')">C:\Program Files (x86)\Steam\steamapps\common\SOS OPS</GameDir>
+    <GameDir Condition="'$(GameDir)' == '' and Exists('C:\Program Files\Steam\steamapps\common\SOS OPS')">C:\Program Files\Steam\steamapps\common\SOS OPS</GameDir>
+    <GameDir Condition="'$(GameDir)' == '' and Exists('D:\SteamLibrary\steamapps\common\SOS OPS')">D:\SteamLibrary\steamapps\common\SOS OPS</GameDir>
+    <GameDir Condition="'$(GameDir)' == '' and Exists('E:\SteamLibrary\steamapps\common\SOS OPS')">E:\SteamLibrary\steamapps\common\SOS OPS</GameDir>
   </PropertyGroup>
+
+  <!-- Friendly error message if GameDir cannot be located -->
+  <Target Name="ValidateGameDir" BeforeTargets="BeforeBuild">
+    <Message Importance="high" Text="Using detected SOS OPS GameDir: '$(GameDir)'" />
+    <Error Condition="'$(GameDir)' == '' or !Exists('$(GameDir)')"
+           Text="Could not automatically detect the SOS OPS game directory. Please pass -p:GameDir=&quot;path/to/SOS OPS&quot; or set the SOSOPS_PATH environment variable." />
+  </Target>
 
   <ItemGroup>
     <Reference Include="MelonLoader">
