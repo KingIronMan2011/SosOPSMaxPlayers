@@ -4,16 +4,16 @@ using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSOSOPS.Constants;
 using Il2CppSOSOPS.Game.Network;
 using Il2CppSOSOPS.Game.Network.States;
-using Il2CppSOSOPS.Game.Network.Lobby.EOS;
 using Il2CppSOSOPS.Game.Network.NetworkSession.Modules;
 using Il2CppSOSOPS.UI.MainMenu.Tabs;
 using Il2CppSOSOPS.UI.PlayerList;
 using Il2CppSOSOPS.UI.Lobby;
 using Il2CppSOSOPS.UI.Gameplay.Leaderboard;
+using Il2CppSOSOPS.Utility;
 using Il2CppSteamworks;
 using UnityEngine;
 
-[assembly: MelonInfo(typeof(SOSOpsMaxPlayers.MaxPlayersMod), "SOS Ops Max Players Mod", "1.1.0", "KingIronMan2011")]
+[assembly: MelonInfo(typeof(SOSOpsMaxPlayers.MaxPlayersMod), "SOS Ops Max Players Mod", "1.2.0", "KingIronMan2011")]
 [assembly: MelonGame("ArtDock", "SOS OPS")]
 
 namespace SOSOpsMaxPlayers
@@ -35,7 +35,7 @@ namespace SOSOpsMaxPlayers
             try
             {
                 NetworkConstants.MAX_PLAYERS = TargetMaxPlayers;
-                LoggerInstance.Msg($"Set NetworkConstants.MAX_PLAYERS to {TargetMaxPlayers}");
+                LoggerInstance.Msg($"Successfully set NetworkConstants.MAX_PLAYERS to {TargetMaxPlayers}");
             }
             catch (System.Exception ex)
             {
@@ -44,14 +44,74 @@ namespace SOSOpsMaxPlayers
         }
     }
 
-    [HarmonyPatch(typeof(NetworkConstants), "get_MAX_PLAYERS")]
-    public static class Patch_NetworkConstants_MaxPlayers
+    // ==========================================
+    // ANTI-MOD DETECTOR BYPASS (Prevents Game Crash/Termination)
+    // ==========================================
+
+    [HarmonyPatch(typeof(ModDetector), nameof(ModDetector.Awake))]
+    public static class Patch_ModDetector_Awake
     {
-        public static void Postfix(ref int __result)
+        public static bool Prefix()
         {
-            __result = MaxPlayersMod.TargetMaxPlayers;
+            Melon<MaxPlayersMod>.Logger.Msg("[Security] Neutered ModDetector.Awake - preventing mod detection crash.");
+            return false;
         }
     }
+
+    [HarmonyPatch(typeof(ModDetector), nameof(ModDetector.CheckAssemblies))]
+    public static class Patch_ModDetector_CheckAssemblies
+    {
+        public static bool Prefix(ref bool __result)
+        {
+            __result = false;
+            return false;
+        }
+    }
+
+    [HarmonyPatch(typeof(ModDetector), nameof(ModDetector.CheckProcessModules))]
+    public static class Patch_ModDetector_CheckProcessModules
+    {
+        public static bool Prefix(ref bool __result)
+        {
+            __result = false;
+            return false;
+        }
+    }
+
+    [HarmonyPatch(typeof(ModDetector), nameof(ModDetector.CheckFileSystem))]
+    public static class Patch_ModDetector_CheckFileSystem
+    {
+        public static bool Prefix(ref bool __result)
+        {
+            __result = false;
+            return false;
+        }
+    }
+
+    [HarmonyPatch(typeof(ModDetector), nameof(ModDetector.CrashGame))]
+    public static class Patch_ModDetector_CrashGame
+    {
+        public static bool Prefix()
+        {
+            Melon<MaxPlayersMod>.Logger.Msg("[Security] Intercepted and blocked ModDetector.CrashGame()!");
+            return false;
+        }
+    }
+
+    [HarmonyPatch(typeof(ModDetector), nameof(ModDetector.TerminateProcess))]
+    public static class Patch_ModDetector_TerminateProcess
+    {
+        public static bool Prefix(ref bool __result)
+        {
+            Melon<MaxPlayersMod>.Logger.Msg("[Security] Intercepted and blocked ModDetector.TerminateProcess()!");
+            __result = true;
+            return false;
+        }
+    }
+
+    // ==========================================
+    // NETWORKING & LOBBY PATCHES
+    // ==========================================
 
     [HarmonyPatch(typeof(SteamMatchmaking), nameof(SteamMatchmaking.CreateLobbyAsync))]
     public static class Patch_SteamMatchmaking_CreateLobbyAsync
@@ -60,15 +120,6 @@ namespace SOSOpsMaxPlayers
         {
             Melon<MaxPlayersMod>.Logger.Msg($"[SteamMatchmaking] Overriding CreateLobbyAsync maxMembers from {maxMembers} to {MaxPlayersMod.TargetMaxPlayers}");
             maxMembers = MaxPlayersMod.TargetMaxPlayers;
-        }
-    }
-
-    [HarmonyPatch(typeof(EosNetworkLobby), "get_DEFAULT_MAX_MEMBERS")]
-    public static class Patch_Eos_DefaultMaxMembers
-    {
-        public static void Postfix(ref uint __result)
-        {
-            __result = (uint)MaxPlayersMod.TargetMaxPlayers;
         }
     }
 

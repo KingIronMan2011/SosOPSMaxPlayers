@@ -33,6 +33,10 @@
       <HintPath>$(GameDir)\MelonLoader\Il2CppAssemblies\Il2CppSOSOPS.Game.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="Il2CppSOSOPS.Utility">
+      <HintPath>$(GameDir)\MelonLoader\Il2CppAssemblies\Il2CppSOSOPS.Utility.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="Il2CppFacepunch.Steamworks.Win64">
       <HintPath>$(GameDir)\MelonLoader\Il2CppAssemblies\Il2CppFacepunch.Steamworks.Win64.dll</HintPath>
       <Private>false</Private>
